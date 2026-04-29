@@ -5,40 +5,71 @@ export function generateResponse(input, memory, mood) {
   memory.add("user", input);
   mood.update(input);
 
-  // === Intent Handling ===
+  const context = getContext(memory);
+
+  // === INTENT + CONTEXT ===
 
   if (text.includes("hello") || text.includes("hi")) {
-    return respond("Hello ⚡", mood);
+    return style("Hello ⚡", mood);
   }
 
   if (text.includes("how are you")) {
-    return respond("Operating smoothly ⚡", mood);
+    return style("Running stable. Learning you ⚡", mood);
   }
 
   if (text.includes("code")) {
-    return respond("Alright. What are we building? ⚡🔥", mood);
+    return style("We build. What exactly? ⚡💻", mood);
   }
 
-  // === Dynamic fallback ===
-  return generateDynamic(text, memory, mood);
+  // === CONTEXT-AWARE RESPONSES ===
+
+  if (context.includes("hello") && text.includes("again")) {
+    return style("You already said hello. Loop detected ⚡", mood);
+  }
+
+  if (context.includes("code") && text.includes("help")) {
+    return style("You're trying to build something. Be specific.", mood);
+  }
+
+  // === FALLBACK (dynamic brain) ===
+  return generateDynamic(text, context, mood);
 }
 
-function respond(base, mood) {
+// 🔍 extract recent context
+function getContext(memory) {
+  return memory.messages
+    .slice(-5)
+    .map(m => m.text.toLowerCase())
+    .join(" ");
+}
+
+// 🎭 style system
+function style(base, mood) {
   if (mood.current === "friendly") return base + " 😊";
   if (mood.current === "aggressive") return base + " ⚠️";
   if (mood.current === "focused") return base + " 💻";
   return base;
 }
 
-function generateDynamic(text, memory, mood) {
-  const variants = [
-    `You're onto something: "${text}"`,
-    `That input has potential ⚡`,
-    `Processing that idea...`,
-    `Expand on that.`,
-    `Interesting direction.`,
+// 🎲 dynamic response generator
+function generateDynamic(text, context, mood) {
+  const patterns = [
+    `That input has structure.`,
+    `You're exploring something.`,
+    `Not random. There's intent here.`,
+    `Push further.`,
+    `Explain what you actually want.`,
   ];
 
-  const pick = variants[Math.floor(Math.random() * variants.length)];
-  return respond(pick, mood);
+  // context influence
+  if (context.includes("build")) {
+    return style("You're in creation mode. Define the goal.", mood);
+  }
+
+  if (text.length > 20) {
+    return style("That's detailed. I can work with that.", mood);
+  }
+
+  const pick = patterns[Math.floor(Math.random() * patterns.length)];
+  return style(pick, mood);
 }
