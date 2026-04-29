@@ -5,10 +5,10 @@ export function setupInput(memory, mood) {
   const inputEl = document.getElementById("input");
   const sendBtn = document.getElementById("sendBtn");
 
-  sendBtn.onclick = send;
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") send();
-  });
+  if (!inputEl || !sendBtn) {
+    console.error("Input or button missing");
+    return;
+  }
 
   function send() {
     const text = inputEl.value.trim();
@@ -20,11 +20,19 @@ export function setupInput(memory, mood) {
 
     setTimeout(() => {
       addMessage(response, "ai");
-      renderMath();
+
+      if (response !== "__CLEAR__") {
+        renderMath();
+      }
     }, 200);
 
     inputEl.value = "";
   }
+
+  sendBtn.addEventListener("click", send);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") send();
+  });
 }
 
 // LaTeX rendering
