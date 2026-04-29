@@ -1,11 +1,16 @@
-export function addMessage(text, sender) {
-  const chat = document.getElementById("chat");
-
 export function formatMessage(text) {
   return text
     .replace(/\n/g, "<br>")
     .replace(/`(.*?)`/g, "<code>$1</code>");
-};
+}
+
+export function addMessage(text, sender) {
+  const chat = document.getElementById("chat");
+
+  if (!chat) {
+    console.error("Chat element not found");
+    return;
+  }
 
   const msg = document.createElement("div");
   msg.className = sender === "user" ? "msg user" : "msg ai";
@@ -16,8 +21,7 @@ export function formatMessage(text) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// optional: clear chat (future use)
 export function clearChat() {
-  document.getElementById("chat").innerHTML = "";
+  const chat = document.getElementById("chat");
+  if (chat) chat.innerHTML = "";
 }
-
