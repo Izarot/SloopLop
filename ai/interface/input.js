@@ -36,9 +36,10 @@ export function setupInput(memory, mood) {
   }
 
   // ✅ CLICK HANDLER (reliable)
-  sendBtn.addEventListener("click", () => {
-    send();
-  });
+  sendBtn.onclick = function (e) {
+  e.preventDefault();
+  send();
+};
 
   // ✅ ENTER HANDLER
   inputEl.addEventListener("keydown", (e) => {
