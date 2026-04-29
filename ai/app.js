@@ -1,10 +1,12 @@
 import { generateResponse } from "./brain/core.js";
+import { memory } from "./brain/memory.js";
+import { mood } from "./brain/mood.js";
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
 
-// ===== ADD MESSAGE =====
+// ===== RENDER =====
 
 function addMessage(text, type) {
   const msg = document.createElement("div");
@@ -15,35 +17,33 @@ function addMessage(text, type) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// ===== HANDLE SEND =====
+// ===== HANDLE =====
 
 function handleSend() {
   const text = input.value.trim();
   if (!text) return;
 
-  // USER LEFT
   addMessage(text, "user");
-
   input.value = "";
 
-  // AI THINKING (optional but nice)
+  // thinking
   const thinking = document.createElement("div");
   thinking.className = "msg ai thinking";
   thinking.textContent = "...";
   chat.appendChild(thinking);
-  chat.scrollTop = chat.scrollHeight;
 
   setTimeout(() => {
     thinking.remove();
 
     let response;
+
     try {
-      response = generateResponse(text);
+      response = generateResponse(text, memory, mood);
     } catch (e) {
-      response = "Error in brain ⚡";
+      console.error(e);
+      response = "Brain crashed ⚡";
     }
 
-    // AI RIGHT
     addMessage(response, "ai");
 
   }, 200);
