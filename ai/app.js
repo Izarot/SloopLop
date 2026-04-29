@@ -1,44 +1,61 @@
 import { generateResponse } from "./brain/core.js";
-import { memory } from "./brain/memory.js";
-import { mood } from "./brain/mood.js";
 
-// ✅ CORRECT SELECTORS (MATCH YOUR HTML)
-const inputBox = document.getElementById("input");
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
-const chatBox = document.getElementById("chat");
 
-// safety check
-if (!inputBox || !sendBtn || !chatBox) {
-  console.error("Elements not found. Check IDs.");
+// ===== RENDER =====
+
+function addUserMessage(text) {
+  const msg = document.createElement("div");
+  msg.className = "msg user";
+  msg.textContent = text;
+  chat.appendChild(msg);
 }
 
-// BUTTON CLICK
-sendBtn.onclick = () => {
-  const userText = inputBox.value.trim();
-  if (!userText) return;
+function addAIMessage(text) {
+  const msg = document.createElement("div");
+  msg.className = "msg ai";
+  msg.textContent = "------------------ " + text;
+  chat.appendChild(msg);
+}
 
-  addMessage("user", userText);
+function scrollToBottom() {
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  const reply = generateResponse(userText, memory, mood);
+// ===== CORE FLOW =====
 
-  addMessage("ai", reply);
+function handleSend() {
+  const text = input.value.trim();
+  if (!text) return;
 
-  inputBox.value = "";
-};
+  addUserMessage(text);
 
-// ENTER KEY
-inputBox.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    sendBtn.click();
-  }
+  input.value = "";
+  scrollToBottom();
+
+  // fake thinking (clean, single instance)
+  const thinking = document.createElement("div");
+  thinking.className = "msg ai thinking";
+  thinking.textContent = "------------------ Thinking...";
+  chat.appendChild(thinking);
+  scrollToBottom();
+
+  setTimeout(() => {
+    thinking.remove();
+
+    const response = generateResponse(text);
+    addAIMessage(response);
+
+    scrollToBottom();
+  }, 300);
+}
+
+// ===== EVENTS =====
+
+sendBtn.addEventListener("click", handleSend);
+
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") handleSend();
 });
-
-// MESSAGE RENDER
-function addMessage(type, text) {
-  const div = document.createElement("div");
-  div.className = type;
-  div.textContent = text;
-
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
