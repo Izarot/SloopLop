@@ -6,7 +6,7 @@ export function setupInput(memory, mood) {
   const sendBtn = document.getElementById("sendBtn");
 
   if (!inputEl || !sendBtn) {
-    console.error("Input or button missing");
+    console.error("Input or button not found");
     return;
   }
 
@@ -16,7 +16,13 @@ export function setupInput(memory, mood) {
 
     addMessage(text, "user");
 
-    const response = generateResponse(text, memory, mood);
+    let response;
+    try {
+      response = generateResponse(text, memory, mood);
+    } catch (e) {
+      console.error(e);
+      response = "Error in AI";
+    }
 
     setTimeout(() => {
       addMessage(response, "ai");
@@ -29,9 +35,17 @@ export function setupInput(memory, mood) {
     inputEl.value = "";
   }
 
-  sendBtn.addEventListener("click", send);
+  // ✅ CLICK HANDLER (reliable)
+  sendBtn.addEventListener("click", () => {
+    send();
+  });
+
+  // ✅ ENTER HANDLER
   inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") send();
+    if (e.key === "Enter") {
+      e.preventDefault(); // prevents weird browser behavior
+      send();
+    }
   });
 }
 
