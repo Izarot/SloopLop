@@ -5,12 +5,16 @@ export function setupInput(memory, mood) {
   const inputEl = document.getElementById("input");
   const sendBtn = document.getElementById("sendBtn");
 
+  console.log("SETUP INPUT RUNNING");
+
   if (!inputEl || !sendBtn) {
-    console.error("Input or button not found");
+    console.error("Missing input or button");
     return;
   }
 
   function send() {
+    console.log("SEND TRIGGERED");
+
     const text = inputEl.value.trim();
     if (!text) return;
 
@@ -19,40 +23,30 @@ export function setupInput(memory, mood) {
     let response;
     try {
       response = generateResponse(text, memory, mood);
-    } catch (e) {
-      console.error(e);
-      response = "Error in AI";
+    } catch (err) {
+      console.error(err);
+      response = "Brain error";
     }
 
     setTimeout(() => {
       addMessage(response, "ai");
 
-      if (response !== "__CLEAR__") {
-        renderMath();
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body);
       }
     }, 200);
 
     inputEl.value = "";
   }
 
-  // ✅ CLICK HANDLER (reliable)
-  sendBtn.onclick = function (e) {
-  e.preventDefault();
-  send();
-};
+  // CLICK (forced)
+  sendBtn.onclick = send;
 
-  // ✅ ENTER HANDLER
-  inputEl.addEventListener("keydown", (e) => {
+  // ENTER
+  inputEl.onkeydown = function (e) {
     if (e.key === "Enter") {
-      e.preventDefault(); // prevents weird browser behavior
+      e.preventDefault();
       send();
     }
-  });
-}
-
-// LaTeX rendering
-function renderMath() {
-  if (window.renderMathInElement) {
-    renderMathInElement(document.body);
-  }
+  };
 }
