@@ -32,12 +32,12 @@ h1 {
 
 .msg.user {
   align-self: flex-start;
-  background: #0ea5e9;
+  background: #0ea6e9;
 }
 
 .msg.ai {
   align-self: flex-end;
-  background: #1e293b;
+  background: #1e293c;
 }
 
 .inputRow {
