@@ -1,3 +1,5 @@
+alert("APP JS LOADED");
+
 console.log("APP STARTED");
 
 // wait for page
