@@ -62,3 +62,23 @@ button {
 button {
   touch-action: manipulation;
 }
+
+.chat {
+  pointer-events: auto;
+}
+
+.inputRow {
+  position: relative;
+  z-index: 10;
+}
+
+button {
+  position: relative;
+  z-index: 20;
+  touch-action: manipulation;
+}
+
+button {
+  min-width: 80px;
+  min-height: 44px; /* mobile-friendly */
+}
