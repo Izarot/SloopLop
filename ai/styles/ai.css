@@ -89,3 +89,13 @@ button {
   position: relative;
   z-index: 10;
 }
+
+button {
+  pointer-events: auto;
+  z-index: 999;
+  position: relative;
+}
+
+.chat {
+  pointer-events: none;
+}
