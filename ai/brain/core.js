@@ -1,3 +1,5 @@
+import { buildResponse } from "./response.js";
+
 let lastResponse = "";
 
 export function generateResponse(input, memory, mood, profile) {
@@ -9,68 +11,33 @@ export function generateResponse(input, memory, mood, profile) {
 
   const context = memory.getRecent();
 
-  // adapt tone
+  // adaptive tone
   mood.current = profile.dominantTone() || mood.current;
 
-  // 🔥 thinking mode
-  if (text.includes("think") || text.includes("solve")) {
-    return style(think(text), mood);
-  }
+  // 🧠 get logic chain
+  const chain = buildResponse(text, context, profile);
 
-  // simple intents
-  if (text.includes("hello") || text.includes("hi")) {
-    return style("Hello.", mood);
-  }
+  // 🔗 convert chain → readable output
+  const output = formatChain(chain);
 
-  if (text.includes("how are you")) {
-    return style("Stable. Processing.", mood);
-  }
-
-  if (text.includes("code")) {
-    return style("Define input → process → output.", mood);
-  }
-
-  return style(generateDynamic(text, context, profile), mood);
+  return style(output, mood);
 }
 
-// 🧠 THINKING ENGINE
-function think(text) {
-  return `
-Step 1: Understand the goal  
-Step 2: Break into parts  
-Step 3: Solve each part  
-Step 4: Combine results  
-Step 5: Output solution  
-  `;
+
+// 🔗 FORMAT CHAIN NICELY
+function formatChain(chain) {
+  return chain.map((step, i) => `Step ${i + 1}: ${step}`).join("\n");
 }
 
-// 🧠 dynamic reasoning
-function generateDynamic(text, context, profile) {
-  const interest = profile.topInterest();
 
-  if (interest === "code") {
-    return "Break into modules. What's step one?";
-  }
-
-  if (text.includes("?")) {
-    return "Clarify the question.";
-  }
-
-  if (text.length < 5) {
-    return "Too short.";
-  }
-
-  return "Continue.";
-}
-
-// 🎭 style system
+// 🎭 STYLE
 function style(base, mood) {
   let res = base;
 
   if (mood.current === "friendly") res += " 🙂";
   if (mood.current === "aggressive") res = res.toUpperCase();
-  if (mood.current === "focused") res = "[FOCUS] " + res;
-  if (mood.current === "analytical") res = "→ " + res;
+  if (mood.current === "focused") res = "[FOCUS]\n" + res;
+  if (mood.current === "analytical") res = "→\n" + res;
 
   if (res === lastResponse) {
     res = "You're looping. Change direction.";
