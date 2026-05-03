@@ -14,35 +14,45 @@ export function generateResponse(input, memory, mood, profile) {
   // adaptive tone
   mood.current = profile.dominantTone() || mood.current;
 
-  // 🧠 get logic chain
   const chain = buildResponse(text, context, profile);
+  let output = formatChain(chain);
 
-  // 🔗 convert chain → readable output
-  const output = formatChain(chain);
+  output = style(output, mood);
 
-  return style(output, mood);
+  // FIX LOOP SPAM
+  if (output === lastResponse) {
+    output = "Say something different.";
+  }
+
+  lastResponse = output;
+  return output;
 }
 
 
-// 🔗 FORMAT CHAIN NICELY
+// 🧠 LOGIC → HUMAN TEXT
 function formatChain(chain) {
-  return chain.map((step, i) => `Step ${i + 1}: ${step}`).join("\n");
+  const map = {
+    "Greet": "Hello.",
+    "Clarify": "What do you mean?",
+    "Handle emotion": "Calm down. Speak clearly.",
+    "Build": "We can build it. What exactly?",
+    "Explain why": "Here’s why:",
+    "Explain how": "Here’s how:",
+    "Neutral": "I get what you're saying."
+  };
+
+  return chain.map(step => map[step] || step).join(" ");
 }
 
 
-// 🎭 STYLE
+// 🎭 STYLE SYSTEM
 function style(base, mood) {
   let res = base;
 
   if (mood.current === "friendly") res += " 🙂";
   if (mood.current === "aggressive") res = res.toUpperCase();
-  if (mood.current === "focused") res = "[FOCUS]\n" + res;
-  if (mood.current === "analytical") res = "→\n" + res;
+  if (mood.current === "focused") res = "[FOCUS] " + res;
+  if (mood.current === "analytical") res = "→ " + res;
 
-  if (res === lastResponse) {
-    res = "You're looping. Change direction.";
-  }
-
-  lastResponse = res;
   return res;
 }
