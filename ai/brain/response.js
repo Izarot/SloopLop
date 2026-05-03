@@ -1,69 +1,32 @@
 export function buildResponse(input, context, profile) {
   const text = input.toLowerCase();
 
-  // 🔥 detect intent
-  if (text.includes("build") || text.includes("make")) {
-    return planBuild(text);
+  // BASIC HUMAN MODE
+  if (/^(hi|hello|hey)/.test(text)) {
+    return ["Greet"];
   }
 
-  if (text.includes("solve") || text.includes("think")) {
-    return planSolve(text);
+  if (text.includes("what")) {
+    return ["Clarify"];
+  }
+
+  if (/(fuck|shit|idiot)/.test(text)) {
+    return ["Handle emotion"];
+  }
+
+  // INTENT MODES
+  if (text.includes("build") || text.includes("make")) {
+    return ["Build"];
   }
 
   if (text.includes("why")) {
-    return explainWhy(text);
+    return ["Explain why"];
   }
 
   if (text.includes("how")) {
-    return explainHow(text);
+    return ["Explain how"];
   }
 
-  // 🎯 fallback but structured
-  return [
-    "Observe input",
-    "Detect pattern",
-    "No clear goal",
-    "Ask for clarification"
-  ];
-}
-
-
-// 🧠 LOGIC CHAINS
-
-function planBuild(text) {
-  return [
-    "Define goal",
-    "List components",
-    "Design structure",
-    "Implement step-by-step",
-    "Test and refine"
-  ];
-}
-
-function planSolve(text) {
-  return [
-    "Understand problem",
-    "Break into parts",
-    "Solve each part",
-    "Combine results",
-    "Verify answer"
-  ];
-}
-
-function explainWhy(text) {
-  return [
-    "Identify cause",
-    "Check dependencies",
-    "Trace reasoning",
-    "Conclude explanation"
-  ];
-}
-
-function explainHow(text) {
-  return [
-    "Define objective",
-    "Choose method",
-    "Execute steps",
-    "Evaluate result"
-  ];
+  // SMART DEFAULT
+  return ["Neutral"];
 }
